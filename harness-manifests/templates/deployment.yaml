@@ -18,7 +18,7 @@ stringData:
 ---
 {{- end}}
 
-{{- if .Values.createImagePullSecret}}
+{{- if .Values.dockercfg}}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -34,7 +34,7 @@ type: kubernetes.io/dockercfg
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.Values.name}}
+  name: {{.Values.name}}-deployment
 spec:
   replicas: {{int .Values.replicas}}
   selector:
@@ -44,14 +44,8 @@ spec:
     metadata:
       labels:
         app: {{.Values.name}}
-        app.kubernetes.io/name: {{.Values.name}}
-        app.kubernetes.io/part-of: {{.Values.name}}
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: /
-        prometheus.io/port: "8088"
     spec:
-      {{- if .Values.createImagePullSecret}}
+      {{- if .Values.dockercfg}}
       imagePullSecrets:
       - name: {{.Values.name}}-dockercfg
       {{- end}}
